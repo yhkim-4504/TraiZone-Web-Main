@@ -11,6 +11,9 @@ class Article(models.Model):
     content = models.TextField()
     create_date = models.DateTimeField()
 
+    def __str__(self):
+        return self.subject
+
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     content = models.TextField()
