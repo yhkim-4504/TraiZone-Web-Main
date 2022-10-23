@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{ article_list.page_range }}</h1>
+<h1>{{ start_idx }}</h1>
 <!-- 글목록 -->
 <div class="container">
     <h2>{{ board_name }}</h2>
+    {% if article_list %}
     <table class="table table-light table-hover">
         <!-- 테이블헤드 -->
         <thead>
@@ -19,10 +20,9 @@
         </thead>
         <!-- 테이블바디 -->
         <tbody>
-            {% if article_list %}
             {% for article in article_list %}
             <tr>
-                <th scope="row">{{ article.id }}</th>
+                <th scope="row">{{ forloop.revcounter0|add:start_idx }}</th>
                 <td><a href="{% url 'main:detail' article.id %}">{{ article.subject }}</a></td>
                 <td>test1</td>
                 <td>{{ article.create_date }}</td>
@@ -31,7 +31,6 @@
                 <td>0</td>
             </tr>
             {% endfor %}
-            {% endif %}
         </tbody>
     </table>
     <!-- 페이지네이션 이동버튼 -->
@@ -51,7 +50,7 @@
             {% for page_num in article_list.paginator.page_range %}
             {% if page_num == article_list.number %}
             <li class="page-item active"><a class="page-link" href="{% url 'main:index' %}?board={{ board_type }}&page={{ page_num }}">{{ page_num }}</a></li>
-            {% elif page_num >= article_list.number|add:-3 and page_num <= article_list.number|add:3 %}
+            {% elif page_num >= article_list.number|add:-5 and page_num <= article_list.number|add:5 %}
             <li class="page-item"><a class="page-link" href="{% url 'main:index' %}?board={{ board_type }}&page={{ page_num }}">{{ page_num }}</a></li>
             {% endif %}
             {% endfor %}
@@ -67,5 +66,8 @@
             </li>
         </ul>
     </nav>
+    {% else %}
+    <h1>작성된 글이 존재하지 않습니다.</h1>
+    {% endif %}
 </div>
 {% endblock %}
