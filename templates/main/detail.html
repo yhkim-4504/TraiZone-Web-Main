@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- 글목록 -->
+<div class="container">
+  <!-- 글표시 -->
+  <div class="card my-3">
+      <div class="card-body">
+        <h4 class="card-title pb-1">{{ article.subject }}</h4>
+        <h6 class="card-subtitle mb-2 text-muted">{{ article.create_date }}</h6>
+        <p class="card-text">{{ article.content }}</p>
+      </div>
+  </div>
+  <!-- 댓글 표시 -->
+  {% if comment_list %}
+  <h5 class="border-bottom pb-1 mt-4">{{ comment_list.count }}개의 댓글이 있습니다.</h5>
+  {% for comment in comment_list %} 
+  <div class="card my-3">
+      <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">{{ comment.create_date }}</h6>
+        <p class="card-text">{{ comment.content }}</p>
+      </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <h5>댓글이 없습니다.</h5>
+  {% endif %}
+  <!-- 새댓글 입력 -->
+  <form action="{% url 'main:comment_create' article.id %}" method="post" class="my-3">
+    {% csrf_token %}
+    <div class="my-4">
+        <h5 class="border-bottom pb-1">댓글달기</h5>
+        <textarea name="content" id="content" class="form-control" rows="8"></textarea>
+    </div>
+    <input type="submit" value="댓글등록" class="btn btn-primary">
+  </form>
+</div>
+{% endblock %}

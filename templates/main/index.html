@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{ start_idx }}</h1>
 <!-- 글목록 -->
 <div class="container">
-    <h2>{{ board_name }}</h2>
+    <h5 class="m-3">{{ board_name }}</h5>
     {% if article_list %}
     <table class="table table-light table-hover">
         <!-- 테이블헤드 -->

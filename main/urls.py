@@ -6,4 +6,6 @@ app_name = 'main'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('<int:article_id>', views.detail, name='detail'),
+    path('comment/create/<int:article_id>', views.comment_create, name='comment_create')
 ]

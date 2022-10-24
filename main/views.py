@@ -26,7 +26,8 @@ def index(request):
         paginator = Paginator(objects, PER_PAGE_NUM)
         objects = paginator.get_page(page)
 
-    context = {'article_list': objects,
+    context = {
+        'article_list': objects,
         'board_name': board_name, 
         'board_type': board_type,
         'start_idx': total_article_length - objects.end_index() + 1 if objects is not None else -1,
@@ -35,4 +36,17 @@ def index(request):
     return render(request, 'main/index.html', context)
 
 def detail(request, article_id):
-    return HttpResponse('detail')
+    article = get_object_or_404(models.Article, id=article_id)
+    comment_list = article.comment_set.all()
+
+    context = {
+        'article': article,
+        'comment_list': comment_list, 
+    }
+
+    return render(request, 'main/detail.html', context)
+
+def comment_create(request, article_id):
+    print(request, article_id)
+
+    return HttpResponse('comment_create')
