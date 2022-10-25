@@ -1,6 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from django.utils import timezone
 import main.models as models
 
 PER_PAGE_NUM = 20
@@ -47,6 +48,10 @@ def detail(request, article_id):
     return render(request, 'main/detail.html', context)
 
 def comment_create(request, article_id):
-    print(request, article_id)
+    content = request.POST.get('content', '')
+    article = get_object_or_404(models.Article, id=article_id)
 
-    return HttpResponse('comment_create')
+    comment = models.Comment(article=article, content=content, create_date=timezone.now())
+    comment.save()
+
+    return redirect('main:detail', article_id=article_id)
