@@ -32,8 +32,12 @@
             {% endfor %}
         </tbody>
     </table>
+    <!-- 글작성 버튼 -->
+    <div id="write-button" class="d-flex justify-content-end">
+        <a class="btn btn-primary" href="{% url 'main:article_create' %}" role="button">글쓰기</a>
+    </div>
     <!-- 페이지네이션 이동버튼 -->
-    <nav aria-label="Page navigation example">
+    <nav class="d-flex justify-content-center">
         <ul class="pagination">
             <!-- 맨앞으로 -->
             <li class="page-item">
