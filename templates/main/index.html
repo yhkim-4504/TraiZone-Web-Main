@@ -1,4 +1,75 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>INDEX.html</h1>
+<!-- 글목록 -->
+<div class="container">
+    <h4 class="my-3">{{ board_name }}</h4>
+    {% if article_list %}
+    <table class="table table-light table-hover">
+        <!-- 테이블헤드 -->
+        <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">작성자</th>
+                <th scope="col">날짜</th>
+                <th scope="col">댓글수</th>
+                <th scope="col">조회수</th>
+                <th scope="col">추천수</th>
+            </tr>
+        </thead>
+        <!-- 테이블바디 -->
+        <tbody>
+            {% for article in article_list %}
+            <tr>
+                <th scope="row">{{ forloop.revcounter0|add:start_idx }}</th>
+                <td><a href="{% url 'main:detail' article.id %}">{{ article.subject }}</a></td>
+                <td>test1</td>
+                <td>{{ article.create_date }}</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- 글작성 버튼 -->
+    <div id="write-button" class="d-flex justify-content-end">
+        <a class="btn btn-primary" href="{% url 'main:article_create' %}?board={{ board_type }}" role="button">글쓰기</a>
+    </div>
+    <!-- 페이지네이션 이동버튼 -->
+    <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+            <!-- 맨앞으로 -->
+            <li class="page-item">
+                {% if article_list.has_previous %}
+                <a class="page-link" href="{% url 'main:index' %}?board={{ board_type }}&page=1" aria-label="Previous">
+                {% else %}
+                <a class="page-link disabled" href="#" aria-label="Previous">
+                {% endif %}
+                <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <!-- 숫자버튼 -->
+            {% for page_num in article_list.paginator.page_range %}
+            {% if page_num == article_list.number %}
+            <li class="page-item active"><a class="page-link" href="{% url 'main:index' %}?board={{ board_type }}&page={{ page_num }}">{{ page_num }}</a></li>
+            {% elif page_num >= article_list.number|add:-5 and page_num <= article_list.number|add:5 %}
+            <li class="page-item"><a class="page-link" href="{% url 'main:index' %}?board={{ board_type }}&page={{ page_num }}">{{ page_num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            <!-- 맨 뒤로 -->
+            <li class="page-item">
+                {% if article_list.has_next %}
+                <a class="page-link" href="{% url 'main:index' %}?board={{ board_type }}&page={{ article_list.paginator.num_pages }}" aria-label="Next">
+                {% else %}
+                <a class="page-link disabled" href="#" aria-label="Next">
+                {% endif %}
+                <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% else %}
+    {% endif %}
+</div>
 {% endblock %}
