@@ -2,7 +2,7 @@
 {% block content %}
 <!-- 글목록 -->
 <div class="container">
-    <h5 class="m-3">{{ board_name }}</h5>
+    <h4 class="my-3">{{ board_name }}</h4>
     {% if article_list %}
     <table class="table table-light table-hover">
         <!-- 테이블헤드 -->
@@ -34,7 +34,7 @@
     </table>
     <!-- 글작성 버튼 -->
     <div id="write-button" class="d-flex justify-content-end">
-        <a class="btn btn-primary" href="{% url 'main:article_create' %}" role="button">글쓰기</a>
+        <a class="btn btn-primary" href="{% url 'main:article_create' %}?board={{ board_type }}" role="button">글쓰기</a>
     </div>
     <!-- 페이지네이션 이동버튼 -->
     <nav class="d-flex justify-content-center">
@@ -70,7 +70,6 @@
         </ul>
     </nav>
     {% else %}
-    <h1>작성된 글이 존재하지 않습니다.</h1>
     {% endif %}
 </div>
 {% endblock %}

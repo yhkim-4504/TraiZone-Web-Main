@@ -7,8 +7,8 @@ class Article(models.Model):
         REVIEW = 'RV', '여행후기'
 
     subject = models.CharField(max_length=200)
-    board_type = models.CharField(max_length=2, choices=BoardType.choices, default=BoardType.FREE)
     content = models.TextField()
+    board_type = models.CharField(max_length=2, choices=BoardType.choices, default=BoardType.FREE)
     create_date = models.DateTimeField()
 
     def __str__(self):

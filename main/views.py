@@ -1,24 +1,24 @@
+from time import time
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.urls.base import reverse
 import main.models as models
 
 PER_PAGE_NUM = 20
 
 # Create your views here.
 def index(request):
-    board_type = request.GET.get('board', 'free')
+    board_type = request.GET.get('board', 'FR')
     page = request.GET.get('page', '1')
     
     # Get Article objects
-    if board_type == 'free':
-        objects = models.Article.objects.filter(board_type='FR').order_by('-create_date')
-        board_name = models.Article.BoardType.FREE.label
-    elif board_type == 'review':
-        objects = models.Article.objects.filter(board_type='RV').order_by('-create_date')
-        board_name = models.Article.BoardType.REVIEW.label
-    else:
+    try:
+        board_type_value = models.Article.BoardType[board_type].value
+        objects = models.Article.objects.filter(board_type=board_type_value).order_by('-create_date')
+        board_name = models.Article.BoardType[board_type].label
+    except:  # 존재하지 않는 borad_type인 경우
         objects = None
         board_name = '존재하지 않는 게시판입니다.'
 
@@ -55,3 +55,29 @@ def comment_create(request, article_id):
     comment.save()
 
     return redirect('main:detail', article_id=article_id)
+
+def article_create(request):
+    if request.method == 'GET':
+        context = {
+            'board_type': request.GET.get('board', '')
+        }
+
+        return render(request, 'main/article_create.html', context)
+    else:
+        subject = request.POST.get('subject')
+        content = request.POST.get('content')
+        board_type = request.POST.get('board_type')
+
+        # Check valid board_type
+        try:
+            board_type_value = models.Article.BoardType[board_type].value
+        except:
+            return HttpResponseBadRequest()
+
+        article = models.Article(subject=subject, content=content, board_type=board_type_value, create_date=timezone.now())
+        article.save()
+
+        response = redirect('main:index')
+        response['Location'] += f'?board={board_type}'
+
+        return response
