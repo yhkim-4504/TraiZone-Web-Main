@@ -4,11 +4,11 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls.base import reverse
+from .forms import ArticleForm
 import main.models as models
 
 PER_PAGE_NUM = 20
 
-# Create your views here.
 def index(request):
     board_type = request.GET.get('board', 'FR')
     page = request.GET.get('page', '1')
@@ -57,9 +57,12 @@ def comment_create(request, article_id):
     return redirect('main:detail', article_id=article_id)
 
 def article_create(request):
+    form = ArticleForm()
+
     if request.method == 'GET':
         context = {
-            'board_type': request.GET.get('board', '')
+            'board_type': request.GET.get('board', ''),
+            'form': form,
         }
 
         return render(request, 'main/article_create.html', context)
