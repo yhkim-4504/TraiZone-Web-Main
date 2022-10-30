@@ -15,8 +15,7 @@ def index(request):
     
     # Get Article objects
     try:
-        board_type_value = models.Article.BoardType[board_type].value
-        objects = models.Article.objects.filter(board_type=board_type_value).order_by('-create_date')
+        objects = models.Article.objects.filter(board_type=board_type).order_by('-create_date')
         board_name = models.Article.BoardType[board_type].label
     except:  # 존재하지 않는 borad_type인 경우
         objects = None
@@ -57,9 +56,8 @@ def comment_create(request, article_id):
     return redirect('main:detail', article_id=article_id)
 
 def article_create(request):
-    form = ArticleForm()
-
     if request.method == 'GET':
+        form = ArticleForm()
         context = {
             'board_type': request.GET.get('board', ''),
             'form': form,
@@ -67,20 +65,19 @@ def article_create(request):
 
         return render(request, 'main/article_create.html', context)
     else:
-        subject = request.POST.get('subject')
-        content = request.POST.get('content')
-        board_type = request.POST.get('board_type')
+        board_type = request.POST.get('board_type', 'FR')
+        form = ArticleForm(request.POST)
 
-        # Check valid board_type
-        try:
-            board_type_value = models.Article.BoardType[board_type].value
-        except:
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.create_date = timezone.now()
+            article.save()
+
+            response = redirect('main:index')
+            response['Location'] += f'?board={board_type}'
+
+            return response
+        
+        else:
             return HttpResponseBadRequest()
-
-        article = models.Article(subject=subject, content=content, board_type=board_type_value, create_date=timezone.now())
-        article.save()
-
-        response = redirect('main:index')
-        response['Location'] += f'?board={board_type}'
-
-        return response
+        
