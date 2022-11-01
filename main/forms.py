@@ -8,5 +8,5 @@ class ArticleForm(forms.ModelForm):
         fields = ['subject', 'content', 'board_type']
         
         widgets = {
-            'content': SummernoteWidget(),
+            'content': SummernoteWidget(attrs={'summernote': {'width': '100%', 'height': '700px'}}),
         }
