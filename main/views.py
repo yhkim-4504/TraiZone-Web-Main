@@ -1,3 +1,5 @@
+import main.models as models
+from bs4 import BeautifulSoup
 from time import time
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -5,7 +7,6 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls.base import reverse
 from .forms import ArticleForm
-import main.models as models
 
 PER_PAGE_NUM = 20
 
@@ -64,20 +65,36 @@ def article_create(request):
         }
 
         return render(request, 'main/article_create.html', context)
-    else:
+        
+    elif request.method == 'POST':
         board_type = request.POST.get('board_type', 'FR')
         form = ArticleForm(request.POST)
 
         if form.is_valid():
+            # Article 저장
             article = form.save(commit=False)
             article.create_date = timezone.now()
             article.save()
+
+            # django-summernote 업로드 이미지경로 저장
+            img_src_list = get_img_src_from_html(article.content)
+            for img_src in img_src_list:
+                article_image_path = models.ArticleImagePath(article=article, image_path=img_src)
+                article_image_path.save()
 
             response = redirect('main:index')
             response['Location'] += f'?board={board_type}'
 
             return response
         
-        else:
-            return HttpResponseBadRequest()
+    return HttpResponseBadRequest()
         
+def get_img_src_from_html(html_text):
+    img_src_list = []
+
+    soup = BeautifulSoup(html_text, 'html.parser')
+    img_tags = soup.select('img')
+    for img_tag in img_tags:
+        img_src_list.append(img_tag.attrs['src'])
+
+    return img_src_list
