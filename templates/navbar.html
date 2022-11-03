@@ -1,6 +1,6 @@
 <!-- 네비게이션 html -->
 <div class="container">
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
             <a class="navbar-brand fs-3" href="{% url 'main:index' %}">TraiZone</a>
             <!-- 토글러 -->
@@ -8,23 +8,40 @@
             <span class="navbar-toggler-icon"></span>
             </button>
             <!-- 네비게이션 메뉴 -->
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav nav-tabs">
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'main:index' %}?board=FR">자유게시판</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'main:index' %}?board=RV">여행후기</a>
-                </li>
-                <!-- 드랍다운 메뉴 -->
-                <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">여행정보</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">1</a></li>
-                    <li><a class="dropdown-item" href="#">2</a></li>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:index' %}?board=FR">자유게시판</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:index' %}?board=RV">여행후기</a>
+                    </li>
+                    <!-- 드랍다운 메뉴 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">여행정보</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">1</a></li>
+                            <li><a class="dropdown-item" href="#">2</a></li>
+                        </ul>
+                    </li>
                 </ul>
-                </li>
-            </ul>
+            </div>
+            <!-- 로그인/로그아웃/회원가입 -->
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'common:login' %}">로그인</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'common:signup' %}">회원가입</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'common:logout' %}">{{ user.username }}(로그아웃)</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>

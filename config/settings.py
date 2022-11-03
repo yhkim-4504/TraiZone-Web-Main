@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'main.apps.MainConfig',
+    'common.apps.CommonConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,6 +128,10 @@ from os.path import join
 MEDIA_URL = 'media/'
 MEDIA_ROOT = join(BASE_DIR, 'media/')
 SUMMERNOTE_IMAGE_PATH = join(MEDIA_URL, 'django-summernote')
+
+# Custom
+LOGIN_REDIRECT_URL = '/main'
+LOGOUT_REDIRECT_URL = '/main'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
