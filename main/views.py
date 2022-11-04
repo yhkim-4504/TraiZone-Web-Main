@@ -2,11 +2,12 @@ import main.models as models
 from bs4 import BeautifulSoup
 from time import time
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls.base import reverse
-from .forms import ArticleForm
+from .forms import ArticleForm, CommentForm
+from django.contrib.auth.decorators import login_required
 
 PER_PAGE_NUM = 20
 
@@ -38,41 +39,48 @@ def index(request):
 
 def detail(request, article_id):
     article = get_object_or_404(models.Article, id=article_id)
-    comment_list = article.comment_set.all()
 
     context = {
         'article': article,
-        'comment_list': comment_list, 
+        'comment_list': article.comment_set.all(),
     }
 
     return render(request, 'main/detail.html', context)
 
+@login_required(login_url='common:login')
 def comment_create(request, article_id):
-    content = request.POST.get('content', '')
     article = get_object_or_404(models.Article, id=article_id)
 
-    comment = models.Comment(article=article, content=content, create_date=timezone.now())
-    comment.save()
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
 
-    return redirect('main:detail', article_id=article_id)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.article = article
+            comment.author = request.user
+            comment.create_date = timezone.now()
+            comment.save()
+    else:
+        form = CommentForm()
 
+    context = {
+        'article': article,
+        'comment_list': article.comment_set.all(),
+        'form': form,
+    }
+
+    return render(request, 'main/detail.html', context)
+
+@login_required(login_url='common:login')
 def article_create(request):
-    if request.method == 'GET':
-        form = ArticleForm()
-        context = {
-            'board_type': request.GET.get('board', ''),
-            'form': form,
-        }
-
-        return render(request, 'main/article_create.html', context)
-        
-    elif request.method == 'POST':
-        board_type = request.POST.get('board_type', 'FR')
+    if request.method == 'POST':
+        board_type = request.POST.get('board_type')
         form = ArticleForm(request.POST)
 
         if form.is_valid():
             # Article 저장
             article = form.save(commit=False)
+            article.user = request.user
             article.create_date = timezone.now()
             article.save()
 
@@ -86,8 +94,16 @@ def article_create(request):
             response['Location'] += f'?board={board_type}'
 
             return response
-        
-    return HttpResponseBadRequest()
+    else:        
+        form = ArticleForm()
+        board_type = request.GET.get('board', '')
+
+    context = {
+        'board_type': board_type,
+        'form': form,
+    }
+
+    return render(request, 'main/article_create.html', context)
         
 def get_img_src_from_html(html_text):
     img_src_list = []

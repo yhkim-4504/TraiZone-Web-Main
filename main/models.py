@@ -1,5 +1,5 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Article(models.Model):
@@ -7,6 +7,7 @@ class Article(models.Model):
         FR = 'FR', '자유게시판'
         RV = 'RV', '여행후기'
 
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.CharField(max_length=200)
     content = models.TextField()
     board_type = models.CharField(max_length=2, choices=BoardType.choices, default=BoardType.FR)
@@ -17,6 +18,7 @@ class Article(models.Model):
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     create_date = models.DateTimeField()
 

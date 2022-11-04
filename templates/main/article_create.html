@@ -2,12 +2,13 @@
 {% block content %}
 <!-- 글목록 -->
 <div class="container">
-    <form action="{% url 'main:article_create' %}" method="post" class="my-3">
+    {% include "form_errors.html" %}
+    <form action="{% url 'main:article_create' %}" method="post" class="my-3">        
         {% csrf_token %}
-        <input type="hidden" name="board_type" value="{{ board_type }}">
+        <input type="hidden" name="board_type" id="board_type" value="{{ board_type }}">
         <div class="mb-3">
             <label class="form-label border-bottom fs-4 fw-semibold">제목</label>
-            <input class="form-control" name="subject" type="text" placeholder="제목을 입력해주세요.">
+            <input class="form-control" name="subject" id="subject" type="text" placeholder="제목을 입력해주세요.">
         </div>
         <div class="mb-3">
             {{ form.content|safe }}
